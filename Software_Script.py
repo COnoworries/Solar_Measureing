@@ -580,7 +580,8 @@ if __name__ == "__main__":
 
                 if USB_FLAG:
                    USB_BU.write_Backup(nullsatz) 
-                
+                else:
+                    pass
                 #BIL.insert_data(nullsatz, True)
                 
             #BIL.insert_data() #Fehlerhafter Datensatz

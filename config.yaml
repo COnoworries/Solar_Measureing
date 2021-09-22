@@ -1,0 +1,43 @@
+---
+#Backup
+#Exertn
+Backup_Extern:
+  SERVER_IP: '217.160.59.243'
+  SERVER_PORT: 8086
+  USERNAME: root
+  SERVER_PW: 'jmb8OuH2#u'
+  DATABASE_NAME: 'Backup_Data'
+  MEASUREMEMT_NAME: 'Data'
+  NUMBER_OF_BACKUPS:
+
+Backup_Local:
+  SERVER_IP: localhost
+  SERVER_PORT: 8086
+  USERNAME: python
+  SERVER_PW: 'Pyth0n'
+  DATABASE_NAME: 'Backup_Data'
+  MEASUREMEMT_NAME: 'Data'
+  NUMBER_OF_BACKUPS:
+
+
+#Notifications
+Notifications:
+  STATUS: FALSE
+  NOTIFICATIONS_INTERVAL: 10 #in Sekunden
+
+
+#Retention-Policy Parameter
+Retention:
+  retention_name : test_retention
+  retention_duration : 10h
+  shard_duration : 1h
+
+#Continuous-Query Parameter
+Query:
+  query_name : power_grid_mean
+  original_data : power_grid
+  data : value
+  mean_time : 15m
+  sample_time : 1m
+  q_duration : 1000w
+

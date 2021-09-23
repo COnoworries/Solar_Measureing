@@ -204,6 +204,10 @@ fi
 rfkill unblock 0
 
 
+#Check if all requirements are up to date
+apt update
+apt upgrade -y
+
 #-------------------------------------
 
 echo "WARNING: Rebooting raspi..."

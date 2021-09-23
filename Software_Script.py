@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 from influxdb import InfluxDBClient
 from datetime import datetime
-#from ADC import MCP3208
+from ADC import MCP3208
 import numpy as np
 import time
 import yaml

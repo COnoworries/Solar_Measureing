@@ -455,7 +455,7 @@ if __name__ == "__main__":
     
     try:
         print("Software booting...")
-        USB_BU = Safe_To_USB()
+        #USB_BU = Safe_To_USB()
         GPS = GPS_Data()
         time.sleep(1)
         GPS.power_on(GPS.power_key)
@@ -471,13 +471,15 @@ if __name__ == "__main__":
             #raise ConnectionError("Influx-connection refused")
         
         SZ = Solarzellen()
+        '''
         USB_BU.check_USB()
 
         if USB_FLAG:
             print("USB recognized")
         else:
             print('\033[93m' + "WARNING: No USB available")
-        
+        '''
+
         #VS.Calibrate()
         count = 0.0
         VS_max_val = [0.0, 0.0, 0.0]
@@ -494,7 +496,7 @@ if __name__ == "__main__":
         nullsatz = [1627318641.5335495, 1.0, 1.1, 1.2, 2.0, 2.1, 2.2, 3.0, 3.1, 3.2, 4.0, 4.1, 4.2, 5.0, 5.1, 5.2, 111, 222, 333, 444, 555]
         
         while(1):
-            USB_BU.check_USB()
+            #USB_BU.check_USB()
             if count <= 1.05:
                 VS_val_new = VS.getAcceleration()
                 SZ_val_new = SZ.Read_Data()
@@ -578,14 +580,15 @@ if __name__ == "__main__":
                 SZ4 = np.array([])
                 SZ5 = np.array([])
 
-                if USB_FLAG:
-                   USB_BU.write_Backup(nullsatz) 
+                #if USB_FLAG:
+                #   USB_BU.write_Backup(nullsatz) 
 
                 BIL.insert_data(nullsatz, True)
                 
             #BIL.insert_data() #Fehlerhafter Datensatz
-    except Exception:
+    except Exception as e:
         print('\033[91m' + "FAIL: Softwareboot" )
+        print(e)
         sys.exit("ERROR: Bad Timeout. Failed to start Software")
 
 

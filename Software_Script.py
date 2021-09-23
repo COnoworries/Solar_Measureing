@@ -451,7 +451,7 @@ if __name__ == "__main__":
     #print(datetime.now())
     #Test_Safe_To_USB()
     #Test_Solarzellen()
-    Test_GPS()
+    #Test_GPS()
     
     try:
         print("Software booting...")
@@ -581,7 +581,7 @@ if __name__ == "__main__":
                 if USB_FLAG:
                    USB_BU.write_Backup(nullsatz) 
 
-                #BIL.insert_data(nullsatz, True)
+                BIL.insert_data(nullsatz, True)
                 
             #BIL.insert_data() #Fehlerhafter Datensatz
     except Exception:

@@ -4,6 +4,22 @@
 
 #Path to config-file
 CONFIG="/boot/config.txt"
+LOCATION="/etc/wpa_supplicant/wpa_supplicant.conf"
+
+#Set country-location
+if grep -Fq "country" $LOCATION
+then 
+	echo "Set country-code to DE"
+	sed -i "s/country/country=DE/" $LOCATION
+else 
+	echo "added configurations to file"
+	echo "ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev" >> $LOCATION
+	echo "update_config=1" >> $LOCATION
+	echo "country=DE" >> $LOCATION
+	echo " " >> $LOCATION
+
+
+fi
 
 #Update Raspberry
 echo "update raspberry"
@@ -144,6 +160,38 @@ apt-get install -y minicom
 
 
 #--------------------------------------
+
+echo "Configurate RPi-hotspot"
+apt-get install hostapd
+apt-get install dnsmasq
+systemctl unmask hostapd
+
+HOTSPOT_CONF="/etc/hostapd/hostapd.conf"
+
+echo "#2.4GHz setup wifi 80211 b,g,n" >> HOTSPOT_CONF
+echo "interface=wlan0" >> HOTSPOT_CONF
+echo "driver=nl80211" >> HOTSPOT_CONF
+echo "ssid=RPiHotspot" >> HOTSPOT_CONF
+echo "hw_mode=g" >> HOTSPOT_CONF
+echo "channel=8" >> HOTSPOT_CONF
+echo "wmm_enabled=0" >> HOTSPOT_CONF
+echo "macaddr_acl=0" >> HOTSPOT_CONF
+echo "auth_algs=1" >> HOTSPOT_CONF
+echo "ignore_broadcast_ssid=0" >> HOTSPOT_CONF
+echo "wpa=2" >> HOTSPOT_CONF
+echo "wpa_passphrase=1234567890" >> HOTSPOT_CONF
+echo "wpa_key_mgmt=WPA-PSK" >> HOTSPOT_CONF
+echo "wpa_pairwise=CCMP TKIP" >> HOTSPOT_CONF
+echo "rsn_pairwise=CCMP" >> HOTSPOT_CONF
+echo " " >> HOTSPOT_CONF
+echo "#80211n - Change GB to your WiFi country code" >> HOTSPOT_CONF
+echo "country_code=DE" >> HOTSPOT_CONF
+echo "ieee80211n=1" >> HOTSPOT_CONF
+echo "ieee80211d=1" >> HOTSPOT_CONF
+
+
+
+#-------------------------------------
 
 echo "WARNING: Rebooting raspi..."
 reboot

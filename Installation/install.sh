@@ -2,24 +2,22 @@
 
 #---it is nessesary to use an raspberry-os-lite image!!---
 
+#---the following steps are necessary BEVOR executeing the script---!!!
+#installing GitHub and downloading data
+#apt install -y git
+#git clone https://github.com/Gesakul/Solar_Measureing.git
+
+
+
+#------------------------------------
+
 #Path to config-file
 CONFIG="/boot/config.txt"
 LOCATION="/etc/wpa_supplicant/wpa_supplicant.conf"
 
-#Set country-location
-if grep -Fq "country" $LOCATION
-then 
-	echo "Set country-code to DE"
-	sed -i "s/country/country=DE/" $LOCATION
-else 
-	echo "added configurations to file"
-	echo "ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev" >> $LOCATION
-	echo "update_config=1" >> $LOCATION
-	echo "country=DE" >> $LOCATION
-	echo " " >> $LOCATION
 
+#-------------------------------------
 
-fi
 
 #Update Raspberry
 echo "update raspberry"
@@ -29,6 +27,7 @@ apt upgrade -y
 #change password
 echo "change pwd"
 passwd
+
 
 #install influxdb 1.8.9
 echo "---influx---"
@@ -131,7 +130,7 @@ echo "installing grafana"
 apt update && apt install -y grafana
 
 echo "initialize grafana"
-cp influx_datasource.yaml /etc/grafana/provisioning/datasources
+cp /Solar_Measureing/Installation/influx_datasource.yaml /etc/grafana/provisioning/datasources
 
 echo "enable & start grafana-server"
 systemctl unmask grafana-server.service
@@ -162,8 +161,8 @@ apt-get install -y minicom
 #--------------------------------------
 
 echo "Configurate RPi-hotspot"
-apt-get install hostapd
-apt-get install dnsmasq
+apt-get install -y hostapd
+apt-get install -y dnsmasq
 systemctl unmask hostapd
 
 HOTSPOT_CONF="/etc/hostapd/hostapd.conf"
@@ -189,6 +188,20 @@ echo "country_code=DE" >> HOTSPOT_CONF
 echo "ieee80211n=1" >> HOTSPOT_CONF
 echo "ieee80211d=1" >> HOTSPOT_CONF
 
+
+#Set country-location
+
+if grep -Fq "country" $LOCATION
+then 
+	echo "Set country-code to DE"
+	sed -i "s/country/country=DE/" $LOCATION
+else 
+	echo "added configurations to file"
+	echo "country=DE" >> $LOCATION
+	echo " " >> $LOCATION
+fi
+
+rfkill unblock 0
 
 
 #-------------------------------------

@@ -6,7 +6,8 @@
 #installing GitHub and downloading data
 #apt install -y git
 #git clone https://github.com/Gesakul/Solar_Measureing.git
-
+#username: Gesakul
+#password: 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
 
 
 #------------------------------------

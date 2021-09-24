@@ -5,7 +5,7 @@ Save_Intervall:
 
 #Time Set
 Time:
-  LOCATION_OFFSET: 2
+  LOCATION: 'Europe/Berlin'
 
 
 #BackupExertn

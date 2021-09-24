@@ -17,6 +17,7 @@ import serial
 import sys
 
 USB_FLAG = False
+Attempt_GPS = 0
 
 ### ---get_networktime--- ###
 def get_time():
@@ -34,6 +35,7 @@ GPIO.setup(4, GPIO.OUT)
 yaml_file = open('config.yaml')
 yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
+INTERVALL = yaml_file["Save_Intervall"]["Intervall"]
 
 ### ---Daten_Lesen--- ###
 class Vibrationssensor:
@@ -157,7 +159,7 @@ class Solarzellen:
 ### ---GPS_Modul---###
 class GPS_Data:
     
-     
+    
     
     def __init__(self):
         
@@ -190,10 +192,15 @@ class GPS_Data:
         self.rec_null = True
         self.answer = 0
         self.liste = []
-        self.answer = self.send_at('AT+CGPSINFO','+CGPSINFO: ',0.1)
+        self.answer = self.send_at('AT+CGPSINFO','+CGPSINFO: ',0.2)
         if self.answer != 0:
             #+CGPSINFO: [lat],[N/S],[log],[E/W],[date],[UTC time],[alt],[speed],[course]
-            self.liste = self.answer.split('\n')[1].split(':')[1].split(',')
+            for i in self.answer.split('\n'):
+                if "+CGPSINFO: " in i:
+                    print(i)
+                    self.liste = i.split(':')[1].split(',')
+                    break
+
             for i in range(len(self.liste)):
                 self.liste[i] = self.liste[i].strip()
             self.answer = 0
@@ -206,7 +213,7 @@ class GPS_Data:
             print('error %d'%self.answer)
             self.rec_buff = ''
             self.send_at('AT+CGPS=0','OK',0.1)
-            return False
+            return [0.0,0.0,0.0]
         #time.sleep(1.5)
 
 
@@ -251,7 +258,7 @@ class Backup_Influx_loc:
     def start_data(self):
         self.insert_data()
     
-    def insert_data(self, data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], status = False):
+    def insert_data(self, data = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ], status = False):
         
         measurements = {
                 "measurement": self.MEASUREMENT_NAME,
@@ -288,7 +295,7 @@ class Backup_Influx_loc:
         #self.json_body = []
         self.json_body.append(measurements)
         self.client.write_points(self.json_body)
-        print("data successfull inserted!@ {}".format(datetime.now()))
+        print("data successfull inserted!@ {}".format(data[0]))
 
 ### ---Backup_extern---###
 class Backup_Influx_ext:
@@ -340,7 +347,7 @@ class Backup_Influx_ext:
         #self.json_body = []
         self.json_body.append(measurements)
         self.client.write_points(self.json_body)
-        print("data successfull sended!@ {}".format(datetime.now()))
+        print("data successfull sended!@ {}".format(data[0]))
     
 class Safe_To_USB():
 
@@ -458,7 +465,16 @@ if __name__ == "__main__":
         #USB_BU = Safe_To_USB()
         GPS = GPS_Data()
         time.sleep(1)
-        GPS.power_on(GPS.power_key)
+        while Attempt_GPS < 5:
+            try:
+                GPS.power_on(GPS.power_key)
+                break
+            except Exception as e:
+                GPS.power_down(GPS.power_key)
+                Attempt_GPS += 1
+                print(e)
+
+        Attempt_GPS = 0
         VS = Vibrationssensor()
         BIL = Backup_Influx_loc()
         
@@ -466,23 +482,24 @@ if __name__ == "__main__":
             BIL.start_data()
             print("Influx-connection successfull")
         except Exception as e:
-            print('\033[91m' + "ERROR: Influx-connection refused" )
+            print('\033[91m' + "ERROR: {}".format(e) )
             sys.exit("ERROR: Influx-connection refused")
             #raise ConnectionError("Influx-connection refused")
         
         SZ = Solarzellen()
-        '''
-        USB_BU.check_USB()
+        
+        # USB_BU.check_USB()
 
-        if USB_FLAG:
-            print("USB recognized")
-        else:
-            print('\033[93m' + "WARNING: No USB available")
-        '''
+        # if USB_FLAG:
+        #     print("USB recognized")
+        # else:
+        #     print('\033[93m' + "WARNING: No USB available")
+        
 
         #VS.Calibrate()
         count = 0.0
         VS_max_val = [0.0, 0.0, 0.0]
+        gps_val = [0.0, 0.0, 0.0]
         SZ_max_val = [0.0, 0.0, 0.0, 0.0, 0.0]
         x_data = np.array([])
         y_data = np.array([])
@@ -493,11 +510,11 @@ if __name__ == "__main__":
         SZ4 = np.array([])
         SZ5 = np.array([])
         #Zeitinformation, den Mittel-/, Maximal-/ und Minimalwerten jeder Solarzelle, den Positionsdaten des Sensors (Längengrad, Breitengrad, Höhe) und den Maximalwert sowie Mittelwert des Vibrationssensors.
-        nullsatz = [1627318641.5335495, 1.0, 1.1, 1.2, 2.0, 2.1, 2.2, 3.0, 3.1, 3.2, 4.0, 4.1, 4.2, 5.0, 5.1, 5.2, 111, 222, 333, 444, 555]
+        nullsatz = [0.0, 1.0, 1.1, 1.2, 2.0, 2.1, 2.2, 3.0, 3.1, 3.2, 4.0, 4.1, 4.2, 5.0, 5.1, 5.2, 111, 222, 333, 444, 555]
         
         while(1):
             #USB_BU.check_USB()
-            if count <= 1.05:
+            if count <= INTERVALL + 0.05:
                 VS_val_new = VS.getAcceleration()
                 SZ_val_new = SZ.Read_Data()
                 
@@ -538,14 +555,19 @@ if __name__ == "__main__":
                 SZ4 = np.append(SZ4, SZ_val_new[3])
                 SZ5 = np.append(SZ5, SZ_val_new[4])
                 
-                count += 0.1
-                time.sleep(0.1)
+                count += 0.2
+                time.sleep(0.2)
                 
             else:
-                gps_val = GPS.get_gps_position()
-                
+                try:
+                    gps_val = GPS.get_gps_position()
+                except Exception as e:
+                    print('\033[91m' + "{}".format(e))
+                    gps_val = [0.0, 0.0, 0.0]
+                    
                 
                 #print(nullsatz)
+                nullsatz[0] = datetime.now()
                 nullsatz[1] = np.mean(SZ1)
                 nullsatz[2] = np.max(SZ1)
                 nullsatz[3] = np.min(SZ1)
@@ -568,7 +590,7 @@ if __name__ == "__main__":
                 nullsatz[-1] = np.mean(z_data)
                 print(nullsatz)
                 
-                count = 0.0
+                count = 0.2
                 VS_max_val = [0.0, 0.0, 0.0]
                 SZ_max_val = [0.0, 0.0, 0.0, 0.0, 0.0]
                 x_data = np.array([])
@@ -590,8 +612,4 @@ if __name__ == "__main__":
         print('\033[91m' + "FAIL: Softwareboot" )
         print(e)
         sys.exit("ERROR: Bad Timeout. Failed to start Software")
-
-
-
-
     

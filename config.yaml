@@ -1,6 +1,10 @@
 ---
-#Backup
-#Exertn
+#Intervall
+Save_Intervall:
+  Intervall: 1
+
+
+#BackupExertn
 Backup_Extern:
   SERVER_IP: '217.160.59.243'
   SERVER_PORT: 8086

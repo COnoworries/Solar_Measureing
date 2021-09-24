@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 from influxdb import InfluxDBClient
-from datetime import datetime
+from datetime import datetime, timedelta
 from ADC import MCP3208
 import numpy as np
 import time
@@ -15,6 +15,7 @@ from os import path
 import pyudev
 import serial
 import sys
+import pytz
 
 USB_FLAG = False
 Attempt_GPS = 0
@@ -35,7 +36,9 @@ GPIO.setup(4, GPIO.OUT)
 yaml_file = open('config.yaml')
 yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
-INTERVALL = yaml_file["Save_Intervall"]["Intervall"]
+INTERVALL = yaml_file["Save_Intervall"]["INTERVALL"]
+
+TIMEZONE = pytz.timezone(yaml_file["Time"]["LOCATION"])
 
 ### ---Daten_Lesen--- ###
 class Vibrationssensor:
@@ -263,7 +266,7 @@ class Backup_Influx_loc:
         measurements = {
                 "measurement": self.MEASUREMENT_NAME,
                 "tags":{},
-                "time": datetime.now(),
+                "time": datetime.now(TIMEZONE),
                 "fields": {
                     "Solarzelle 1 (Mean)": data[1],
                     "Solarzelle 1 (Max) ": data[2],
@@ -315,7 +318,7 @@ class Backup_Influx_ext:
         measurements = {
                 "measurement": self.MEASUREMENT_NAME,
                 "tags":{},
-                "time": datetime.now(),
+                "time": datetime.now(TIMEZONE),
                 "fields": {
                     "Solarzelle 1 (Mean)": data[1],
                     "Solarzelle 1 (Max) ": data[2],
@@ -567,7 +570,7 @@ if __name__ == "__main__":
                     
                 
                 #print(nullsatz)
-                nullsatz[0] = datetime.now()
+                nullsatz[0] = datetime.now(TIMEZONE)
                 nullsatz[1] = np.mean(SZ1)
                 nullsatz[2] = np.max(SZ1)
                 nullsatz[3] = np.min(SZ1)

@@ -62,6 +62,9 @@ echo "setting up required modules"
 #install python pip
 apt install -y python3-pip
 
+#install timedelta modul
+pip3 install pytz
+
 #install python-influx
 pip3 install influxdb
 

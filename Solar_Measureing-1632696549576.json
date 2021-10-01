@@ -32,11 +32,11 @@
             "mode": "palette-classic"
           },
           "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
+            "axisLabel": "U/V",
+            "axisPlacement": "left",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 8,
+            "fillOpacity": 20,
             "gradientMode": "opacity",
             "hideFrom": {
               "legend": false,
@@ -77,8 +77,8 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
-        "w": 12,
+        "h": 8,
+        "w": 8,
         "x": 0,
         "y": 0
       },
@@ -131,6 +131,7 @@
         }
       ],
       "title": "Solarzelle 1",
+      "transparent": true,
       "type": "timeseries"
     },
     {
@@ -141,11 +142,11 @@
             "mode": "palette-classic"
           },
           "custom": {
-            "axisLabel": "",
+            "axisLabel": "U/V",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 8,
+            "fillOpacity": 20,
             "gradientMode": "opacity",
             "hideFrom": {
               "legend": false,
@@ -186,9 +187,9 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 12,
+        "h": 8,
+        "w": 8,
+        "x": 8,
         "y": 0
       },
       "id": 3,
@@ -240,6 +241,7 @@
         }
       ],
       "title": "Solarzelle 2",
+      "transparent": true,
       "type": "timeseries"
     },
     {
@@ -250,11 +252,11 @@
             "mode": "palette-classic"
           },
           "custom": {
-            "axisLabel": "",
+            "axisLabel": "U/V",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 8,
+            "fillOpacity": 20,
             "gradientMode": "opacity",
             "hideFrom": {
               "legend": false,
@@ -295,10 +297,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 9
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 0
       },
       "id": 5,
       "options": {
@@ -349,6 +351,7 @@
         }
       ],
       "title": "Solarzelle 3",
+      "transparent": true,
       "type": "timeseries"
     },
     {
@@ -359,11 +362,11 @@
             "mode": "palette-classic"
           },
           "custom": {
-            "axisLabel": "",
+            "axisLabel": "U/V",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 8,
+            "fillOpacity": 20,
             "gradientMode": "opacity",
             "hideFrom": {
               "legend": false,
@@ -405,118 +408,9 @@
       },
       "gridPos": {
         "h": 9,
-        "w": 12,
-        "x": 12,
-        "y": 9
-      },
-      "id": 4,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
-        {
-          "groupBy": [],
-          "measurement": "Data",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "Solarzelle 4 (Max) "
-                ],
-                "type": "field"
-              }
-            ],
-            [
-              {
-                "params": [
-                  "Solarzelle 4 (Mean)"
-                ],
-                "type": "field"
-              }
-            ],
-            [
-              {
-                "params": [
-                  "Solarzelle 4 (Min) "
-                ],
-                "type": "field"
-              }
-            ]
-          ],
-          "tags": []
-        }
-      ],
-      "title": "Solarzelle 4",
-      "type": "timeseries"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 8,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "smooth",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
+        "w": 8,
         "x": 0,
-        "y": 18
+        "y": 8
       },
       "id": 6,
       "options": {
@@ -567,10 +461,225 @@
         }
       ],
       "title": "Solarzelle 5",
+      "transparent": true,
       "type": "timeseries"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "U/V",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 8,
+        "y": 8
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "groupBy": [],
+          "measurement": "Data",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "Solarzelle 4 (Max) "
+                ],
+                "type": "field"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "Solarzelle 4 (Mean)"
+                ],
+                "type": "field"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "Solarzelle 4 (Min) "
+                ],
+                "type": "field"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "title": "Solarzelle 4",
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "accG"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Data.Accelerometer (Max) "
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "G-Force (Max)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Data.Accelerometer (Mean)"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "G-Force (Mean)"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 8
+      },
+      "id": 8,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "text": {}
+      },
+      "pluginVersion": "8.1.5",
+      "targets": [
+        {
+          "groupBy": [],
+          "measurement": "Data",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "Accelerometer (Max) "
+                ],
+                "type": "field"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "Accelerometer (Mean)"
+                ],
+                "type": "field"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "title": "Vibration",
+      "transparent": true,
+      "type": "gauge"
     }
   ],
-  "refresh": "5s",
+  "refresh": false,
   "schemaVersion": 30,
   "style": "dark",
   "tags": [],
@@ -578,12 +687,12 @@
     "list": []
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Solar_Measureing",
   "uid": "aiQkX2Rgz",
-  "version": 1
+  "version": 7
 }

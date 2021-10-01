@@ -17,8 +17,18 @@ import serial
 import sys
 import pytz
 
+
+### ---CONFIG_Data--- ###
+yaml_file = open('config.yaml')
+yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
+INTERVALL = yaml_file["Save_Intervall"]["INTERVALL"]
+TIMEZONE = pytz.timezone(yaml_file["Time"]["LOCATION"])
 USB_FLAG = False
+delta_time = timedelta(seconds=INTERVALL)
 Attempt_GPS = 0
+
+
+
 
 ### ---get_networktime--- ###
 def get_time():
@@ -31,14 +41,6 @@ def get_time():
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(4, GPIO.OUT)
-
-### ---CONFIG_Data--- ###
-yaml_file = open('config.yaml')
-yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
-
-INTERVALL = yaml_file["Save_Intervall"]["INTERVALL"]
-
-TIMEZONE = pytz.timezone(yaml_file["Time"]["LOCATION"])
 
 ### ---Daten_Lesen--- ###
 class Vibrationssensor:
@@ -515,12 +517,21 @@ if __name__ == "__main__":
         #Zeitinformation, den Mittel-/, Maximal-/ und Minimalwerten jeder Solarzelle, den Positionsdaten des Sensors (Längengrad, Breitengrad, Höhe) und den Maximalwert sowie Mittelwert des Vibrationssensors.
         nullsatz = [0.0, 1.0, 1.1, 1.2, 2.0, 2.1, 2.2, 3.0, 3.1, 3.2, 4.0, 4.1, 4.2, 5.0, 5.1, 5.2, 111, 222, 333, 444, 555]
         
+        x = 0
         while(1):
             #USB_BU.check_USB()
-            if count <= INTERVALL + 0.05:
-                VS_val_new = VS.getAcceleration()
-                SZ_val_new = SZ.Read_Data()
-                
+            start_time_global = datetime.now()
+            end_time_gloabl = 0
+
+            while start_time_global + timedelta(seconds=x) > end_time_gloabl:
+                start_time_local = datetime.now()
+                end_time_local = datetime(2000,1,1)
+
+                while start_time_local + timedelta(microseconds=100) > end_time_local:
+                    VS_val_new = VS.getAcceleration()
+                    SZ_val_new = SZ.Read_Data()
+                    end_time_local = datetime.now()
+                    
                 #MAXIMUM VIB-SENS-VAL
                 if VS_val_new[0] > VS_max_val[0]:
                     VS_max_val[0] = VS_val_new[0]
@@ -557,11 +568,10 @@ if __name__ == "__main__":
                 SZ3 = np.append(SZ3, SZ_val_new[2])
                 SZ4 = np.append(SZ4, SZ_val_new[3])
                 SZ5 = np.append(SZ5, SZ_val_new[4])
+                    
+                end_time_gloabl = datetime.now()
                 
-                count += 0.2
-                time.sleep(0.2)
-                
-            else:
+            
                 try:
                     gps_val = GPS.get_gps_position()
                 except Exception as e:
@@ -609,7 +619,8 @@ if __name__ == "__main__":
                 #   USB_BU.write_Backup(nullsatz) 
 
                 BIL.insert_data(nullsatz, True)
-                
+
+            x += 1    
             #BIL.insert_data() #Fehlerhafter Datensatz
     except Exception as e:
         print('\033[91m' + "FAIL: Softwareboot" )

@@ -4,7 +4,7 @@
 
 #---the following steps are necessary BEVOR executeing the script---!!!
 #installing GitHub and downloading data
-#apt install -y git
+#sudo apt install -y git
 #git clone https://github.com/Gesakul/Solar_Measureing.git
 #username: Gesakul
 #password: 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
@@ -135,6 +135,7 @@ apt update && apt install -y grafana
 
 echo "initialize grafana"
 cp /Solar_Measureing/Installation/influx_datasource.yaml /etc/grafana/provisioning/datasources
+cp ############################################### /etc/grafana/provisioning/dashboards
 
 echo "enable & start grafana-server"
 systemctl unmask grafana-server.service
@@ -204,6 +205,8 @@ else
 	echo "country=DE" >> $LOCATION
 	echo " " >> $LOCATION
 fi
+
+timedatectl set-timezone Europe/Berlin
 
 rfkill unblock 0
 

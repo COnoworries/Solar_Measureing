@@ -151,11 +151,11 @@ class Solarzellen:
         self.SZ1 = self.SZ2 = self.SZ3 = self.SZ4 = self.SZ5 = 0
     
     def Read_Data(self):
-        self.SZ1 = self.adc.read(channel = 3)/1024.0 * 3.3 
-        self.SZ2 = self.adc.read(channel = 4)/1024.0 * 3.3
-        self.SZ3 = self.adc.read(channel = 5)/1024.0 * 3.3
-        self.SZ4 = self.adc.read(channel = 6)/1024.0 * 3.3
-        self.SZ5 = self.adc.read(channel = 7)/1024.0 * 3.3
+        self.SZ1 = self.adc.read(channel = 3)/4096.0 * 10.0
+        self.SZ2 = self.adc.read(channel = 4)/4096.0 * 10.0
+        self.SZ3 = self.adc.read(channel = 5)/4096.0 * 10.0
+        self.SZ4 = self.adc.read(channel = 6)/4096.0 * 10.0
+        self.SZ5 = self.adc.read(channel = 7)/4096.0 * 10.0
         
         return [self.SZ1, self.SZ2, self.SZ3, self.SZ4, self.SZ5]
 
@@ -202,7 +202,7 @@ class GPS_Data:
             #+CGPSINFO: [lat],[N/S],[log],[E/W],[date],[UTC time],[alt],[speed],[course]
             for i in self.answer.split('\n'):
                 if "+CGPSINFO: " in i:
-                    print(i)
+                    #print(i)
                     self.liste = i.split(':')[1].split(',')
                     break
 
@@ -362,9 +362,11 @@ class Safe_To_USB():
         self.device_list = (device.device_node for device in self.context.list_devices(subsystem='block', DEVTYPE='partition'))
     
     def check_USB(self):
+        global USB_FLAG
         for i in self.device_list:
             if i == "/dev/sda1":
                 USB_FLAG = True
+                break
             else:
                 USB_FLAG = False
 
@@ -388,12 +390,6 @@ def Test_Solarzellen():
     except:
         print("Couldn't execute the funtion")
         raise
-
-def Test_Safe_To_USB():
-    STU = Safe_To_USB()
-    data = [398, 473, 558, 618, 720, -459, 751, 640, 630, 716, 1627318641.5335495]
-    STU.write_Backup(data)
-    
 
 def Test_VS_Read():
     #[x_val, y_val, z_val]
@@ -450,24 +446,24 @@ def Test_GPS():
         
 
 if __name__ == "__main__":
-    #GPIO.output(4, GPIO.HIGH)
+    # GPIO.output(4, GPIO.HIGH)
     
-    #Test_DB_loc_Insert()
-    #Test_VS_Read()
-    #Vibrationssensor().Calibrate()
-    #for i in range (1000):
+    # Test_DB_loc_Insert()
+    # Test_VS_Read()
+    # Vibrationssensor().Calibrate()
+    # for i in range (1000):
     #    #Test_VS_Read()
     #    Test_Solarzellen()
     #    time.sleep(1)
-    #get_time()
-    #print(datetime.now())
-    #Test_Safe_To_USB()
-    #Test_Solarzellen()
-    #Test_GPS()
-    
+    # get_time()
+    # print(datetime.now())
+    # Test_USB_BU()
+    # Test_Solarzellen()
+    # Test_GPS()
+
     try:
         print("Software booting...")
-        #USB_BU = Safe_To_USB()
+        USB_BU = Safe_To_USB()
         GPS = GPS_Data()
         time.sleep(1)
         while Attempt_GPS < 5:
@@ -493,16 +489,16 @@ if __name__ == "__main__":
         
         SZ = Solarzellen()
         
-        # USB_BU.check_USB()
+        USB_BU.check_USB()
 
-        # if USB_FLAG:
-        #     print("USB recognized")
-        # else:
-        #     print('\033[93m' + "WARNING: No USB available")
+        if USB_FLAG:
+            print("USB recognized")
+        else:
+            print('\033[93m' + "WARNING: No USB available")
         
 
         #VS.Calibrate()
-        count = 0.0
+        
         VS_max_val = [0.0, 0.0, 0.0]
         gps_val = [0.0, 0.0, 0.0]
         SZ_max_val = [0.0, 0.0, 0.0, 0.0, 0.0]
@@ -517,113 +513,116 @@ if __name__ == "__main__":
         #Zeitinformation, den Mittel-/, Maximal-/ und Minimalwerten jeder Solarzelle, den Positionsdaten des Sensors (Längengrad, Breitengrad, Höhe) und den Maximalwert sowie Mittelwert des Vibrationssensors.
         nullsatz = [0.0, 1.0, 1.1, 1.2, 2.0, 2.1, 2.2, 3.0, 3.1, 3.2, 4.0, 4.1, 4.2, 5.0, 5.1, 5.2, 111, 222, 333, 444, 555]
         
-        x = 0
+        x = 1
+        start_time_global = datetime.now()
+        end_time_gloabl = datetime(2000,1,1)
+        
         while(1):
-            #USB_BU.check_USB()
-            start_time_global = datetime.now()
-            end_time_gloabl = 0
-
+            t1_start = time.process_time()
+            USB_BU.check_USB()
+            
             while start_time_global + timedelta(seconds=x) > end_time_gloabl:
                 start_time_local = datetime.now()
                 end_time_local = datetime(2000,1,1)
 
-                while start_time_local + timedelta(microseconds=100) > end_time_local:
+                while start_time_local + timedelta(milliseconds=100) > end_time_local:
                     VS_val_new = VS.getAcceleration()
                     SZ_val_new = SZ.Read_Data()
                     end_time_local = datetime.now()
-                    
+                end_time_gloabl = datetime.now()    
                 #MAXIMUM VIB-SENS-VAL
-                if VS_val_new[0] > VS_max_val[0]:
-                    VS_max_val[0] = VS_val_new[0]
-                    
-                if VS_val_new[1] > VS_max_val[1]:
-                    VS_max_val[1] = VS_val_new[1]
-                    
-                if VS_val_new[2] > VS_max_val[2]:
-                    VS_max_val[2] = VS_val_new[2]
-                    
-                if SZ_val_new[0] > SZ_max_val[0]:
-                    SZ_max_val[0] = SZ_val_new[0]
-                    
-                if SZ_val_new[1] > SZ_max_val[1]:
-                    SZ_max_val[1] = SZ_val_new[1]
-                    
-                if SZ_val_new[2] > SZ_max_val[2]:
-                    SZ_max_val[2] = SZ_val_new[2]
-                    
-                if SZ_val_new[3] > SZ_max_val[3]:
-                    SZ_max_val[3] = SZ_val_new[3]
-                    
-                if SZ_val_new[4] > SZ_max_val[4]:
-                    SZ_max_val[4] = SZ_val_new[4]
+            if VS_val_new[0] > VS_max_val[0]:
+                VS_max_val[0] = VS_val_new[0]
                 
-                    
+            if VS_val_new[1] > VS_max_val[1]:
+                VS_max_val[1] = VS_val_new[1]
                 
-                #MEAN VIB_SENS_VAL
-                x_data = np.append(x_data, VS_val_new[0])
-                y_data = np.append(y_data, VS_val_new[1])
-                z_data = np.append(z_data, VS_val_new[2])
-                SZ1 = np.append(SZ1, SZ_val_new[0])
-                SZ2 = np.append(SZ2, SZ_val_new[1])
-                SZ3 = np.append(SZ3, SZ_val_new[2])
-                SZ4 = np.append(SZ4, SZ_val_new[3])
-                SZ5 = np.append(SZ5, SZ_val_new[4])
-                    
-                end_time_gloabl = datetime.now()
+            if VS_val_new[2] > VS_max_val[2]:
+                VS_max_val[2] = VS_val_new[2]
+                
+            if SZ_val_new[0] > SZ_max_val[0]:
+                SZ_max_val[0] = SZ_val_new[0]
+                
+            if SZ_val_new[1] > SZ_max_val[1]:
+                SZ_max_val[1] = SZ_val_new[1]
+                
+            if SZ_val_new[2] > SZ_max_val[2]:
+                SZ_max_val[2] = SZ_val_new[2]
+                
+            if SZ_val_new[3] > SZ_max_val[3]:
+                SZ_max_val[3] = SZ_val_new[3]
+                
+            if SZ_val_new[4] > SZ_max_val[4]:
+                SZ_max_val[4] = SZ_val_new[4]
+            
                 
             
-                try:
-                    gps_val = GPS.get_gps_position()
-                except Exception as e:
-                    print('\033[91m' + "{}".format(e))
-                    gps_val = [0.0, 0.0, 0.0]
-                    
+            #MEAN VIB_SENS_VAL
+            x_data = np.append(x_data, VS_val_new[0])
+            y_data = np.append(y_data, VS_val_new[1])
+            z_data = np.append(z_data, VS_val_new[2])
+            SZ1 = np.append(SZ1, SZ_val_new[0])
+            SZ2 = np.append(SZ2, SZ_val_new[1])
+            SZ3 = np.append(SZ3, SZ_val_new[2])
+            SZ4 = np.append(SZ4, SZ_val_new[3])
+            SZ5 = np.append(SZ5, SZ_val_new[4])
                 
-                #print(nullsatz)
-                nullsatz[0] = datetime.now(TIMEZONE)
-                nullsatz[1] = np.mean(SZ1)
-                nullsatz[2] = np.max(SZ1)
-                nullsatz[3] = np.min(SZ1)
-                nullsatz[4] = np.mean(SZ2)
-                nullsatz[5] = np.max(SZ2)
-                nullsatz[6] = np.min(SZ2)
-                nullsatz[7] = np.mean(SZ3)
-                nullsatz[8] = np.max(SZ3)
-                nullsatz[9] = np.min(SZ3)
-                nullsatz[10] = np.mean(SZ4)
-                nullsatz[11] = np.max(SZ4)
-                nullsatz[12] = np.min(SZ4)
-                nullsatz[13] = np.mean(SZ5)
-                nullsatz[14] = np.max(SZ5)
-                nullsatz[15] = np.min(SZ5)
-                nullsatz[16] = gps_val[0]
-                nullsatz[17] = gps_val[1]
-                nullsatz[18] = gps_val[2]
-                nullsatz[-2] = VS_max_val[2]
-                nullsatz[-1] = np.mean(z_data)
-                print(nullsatz)
+            
+            
+        
+            try:
+                gps_val = GPS.get_gps_position()
+            except Exception as e:
+                print('\033[91m' + "{}".format(e))
+                gps_val = [0.0, 0.0, 0.0]
                 
-                count = 0.2
-                VS_max_val = [0.0, 0.0, 0.0]
-                SZ_max_val = [0.0, 0.0, 0.0, 0.0, 0.0]
-                x_data = np.array([])
-                y_data = np.array([])
-                z_data = np.array([])
-                SZ1 = np.array([])
-                SZ2 = np.array([])
-                SZ3 = np.array([])
-                SZ4 = np.array([])
-                SZ5 = np.array([])
+            
+            #print(nullsatz)
+            nullsatz[0] = datetime.now(TIMEZONE)
+            nullsatz[1] = np.mean(SZ1)
+            nullsatz[2] = np.max(SZ1)
+            nullsatz[3] = np.min(SZ1)
+            nullsatz[4] = np.mean(SZ2)
+            nullsatz[5] = np.max(SZ2)
+            nullsatz[6] = np.min(SZ2)
+            nullsatz[7] = np.mean(SZ3)
+            nullsatz[8] = np.max(SZ3)
+            nullsatz[9] = np.min(SZ3)
+            nullsatz[10] = np.mean(SZ4)
+            nullsatz[11] = np.max(SZ4)
+            nullsatz[12] = np.min(SZ4)
+            nullsatz[13] = np.mean(SZ5)
+            nullsatz[14] = np.max(SZ5)
+            nullsatz[15] = np.min(SZ5)
+            nullsatz[16] = gps_val[0]
+            nullsatz[17] = gps_val[1]
+            nullsatz[18] = gps_val[2]
+            nullsatz[-2] = VS_max_val[2]
+            nullsatz[-1] = np.mean(z_data)
+            #print(nullsatz)
+            
+            
+            VS_max_val = [0.0, 0.0, 0.0]
+            SZ_max_val = [0.0, 0.0, 0.0, 0.0, 0.0]
+            x_data = np.array([])
+            y_data = np.array([])
+            z_data = np.array([])
+            SZ1 = np.array([])
+            SZ2 = np.array([])
+            SZ3 = np.array([])
+            SZ4 = np.array([])
+            SZ5 = np.array([])
 
-                #if USB_FLAG:
-                #   USB_BU.write_Backup(nullsatz) 
+            if USB_FLAG:
+                USB_BU.write_Backup(nullsatz) 
 
-                BIL.insert_data(nullsatz, True)
+            BIL.insert_data(nullsatz, True)
 
-            x += 1    
-            #BIL.insert_data() #Fehlerhafter Datensatz
+            x += 1
+        t1_stop = time.process_time()
+        print("Elapsed time during the whole program in seconds:",t1_stop-t1_start)  
+        #BIL.insert_data() #Fehlerhafter Datensatz
     except Exception as e:
         print('\033[91m' + "FAIL: Softwareboot" )
         print(e)
         sys.exit("ERROR: Bad Timeout. Failed to start Software")
-    

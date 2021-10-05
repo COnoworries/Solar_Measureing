@@ -1,57 +1,12 @@
-import threading
-interval = 1
-from datetime import datetime, timedelta
-import time
+import pyudev
 
-# def myPeriodicFunction():
-#     print(datetime.now())
-#     print ("This loops on a timer every %d seconds" % interval)
+context = pyudev.Context()
+monitor = pyudev.Monitor.from_netlink(context)
+monitor.filter_by('block')
+def log_event(action, device):
+    if 'ID_FS_TYPE' in device:
+        with open('filesystems.log', 'a+') as stream:
+            print('{0} - {1}'.format(action, device.get('ID_FS_LABEL')), file=stream)
 
-# def startTimer():
-#     threading.Timer(interval, startTimer).start()
-#     myPeriodicFunction()
-
-# startTimer()
-# while(1):
-#     start = datetime.now()
-#     print(datetime.now())
-#     end = datetime.now()
-
-#     exec_time = end - start
-#     print(exec_time)
-#     time.sleep(1-exec_time.total_seconds())
-
-start_time_global = datetime.now()
-end_time_gloabl = datetime(2000,1,1)
-x = 1
-a = 0
-while(1):
-    while start_time_global + timedelta(seconds=x) > end_time_gloabl:
-        start_time_local = datetime.now()
-        end_time_local = datetime(2000,1,1)
-        
-        while start_time_local + timedelta(milliseconds=100) > end_time_local:
-            #print("PEACE")
-            end_time_local = datetime.now()
-        end_time_gloabl = datetime.now()
-
-        
-        # if x != 10:
-        #     print("Es ist passier!")
-
-        #print("SEKUNDE VORBEI")
-        a += 1
-        print(a)
-
-    if a != 10:
-        print(a)
-        print("Es ist passiert!")
-    
-    print(datetime.now())
-    
-    
-    a = 0
-    x += 1   
-       
-
-                        
+observer = pyudev.MonitorObserver(monitor, log_event)
+observer.start()

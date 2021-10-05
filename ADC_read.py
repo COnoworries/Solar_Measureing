@@ -3,6 +3,6 @@ import time
 
 adc = MCP3208()
 while(1):
-    SZ1 = adc.read(channel = 6)
-    print("Anliegende Spannung: %.2f" % (value / 1024.0  * 3.3) )
+    SZ = adc.read(channel = 6)
+    print("Anliegende Spannung: %.2f" % (SZ / 4096.0  * 10.0) )
     time.sleep(1)

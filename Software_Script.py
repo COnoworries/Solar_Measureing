@@ -16,6 +16,7 @@ import pyudev
 import serial
 import sys
 import pytz
+import subprocess
 
 
 ### ---CONFIG_Data--- ###
@@ -365,6 +366,12 @@ class Safe_To_USB():
         global USB_FLAG
         for i in self.device_list:
             if i == "/dev/sda1":
+                try:
+                    subprocess.call(['sh', 'Installation/USB_config.sh'])
+                    yaml_file["USB_FOLDER"]["STATUS"] = True
+                except Exception as e:
+                    print('\033[91m' + "ERROR: {}".format(e) )
+                    print("Couldn't create Folder")
                 USB_FLAG = True
                 break
             else:
@@ -373,8 +380,8 @@ class Safe_To_USB():
 
     def write_Backup(self, data):
     #Prueft ob die Datei existiert
-        if (self.check_USB()):
-            with open("Backup.csv", 'a') as bu_file: #ANPASSUNG AN USB SPEICHERORT
+        if (self.check_USB() & yaml_file["USB_FOLDER"]["STATUS"]):
+            with open("mnt/Backup_Data/Backup.csv", 'a') as bu_file: #ANPASSUNG AN USB SPEICHERORT
                 for i in range(len(data)):
                     bu_file.write("{}; ". format(data[i]))
                 bu_file.write('\n')
@@ -457,10 +464,10 @@ if __name__ == "__main__":
     #    time.sleep(1)
     # get_time()
     # print(datetime.now())
-    # Test_USB_BU()
+    Test_USB_BU()
     # Test_Solarzellen()
     # Test_GPS()
-
+    '''
     try:
         print("Software booting...")
         USB_BU = Safe_To_USB()
@@ -626,3 +633,4 @@ if __name__ == "__main__":
         print('\033[91m' + "FAIL: Softwareboot" )
         print(e)
         sys.exit("ERROR: Bad Timeout. Failed to start Software")
+    '''

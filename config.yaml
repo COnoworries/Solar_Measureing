@@ -7,6 +7,9 @@ Save_Intervall:
 Time:
   LOCATION: 'Europe/Berlin'
 
+#USB BACKUP FOLDER
+USB_FOLDER:
+  STATUS: False
 
 #BackupExertn
 Backup_Extern:

@@ -1,12 +1,5 @@
 import pyudev
 
 context = pyudev.Context()
-monitor = pyudev.Monitor.from_netlink(context)
-monitor.filter_by('block')
-def log_event(action, device):
-    if 'ID_FS_TYPE' in device:
-        with open('filesystems.log', 'a+') as stream:
-            print('{0} - {1}'.format(action, device.get('ID_FS_LABEL')), file=stream)
-
-observer = pyudev.MonitorObserver(monitor, log_event)
-observer.start()
+device_list = (device.device_node for device in context.list_devices(subsystem='block', DEVTYPE='partition'))
+print(device_list)

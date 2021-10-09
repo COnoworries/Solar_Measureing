@@ -20,7 +20,8 @@ import subprocess
 
 
 ### ---CONFIG_Data--- ###
-yaml_file = open('config.yaml')
+fname = 'config.yaml'
+yaml_file = open(fname)
 yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
 INTERVALL = yaml_file["Save_Intervall"]["INTERVALL"]
 TIMEZONE = pytz.timezone(yaml_file["Time"]["LOCATION"])
@@ -363,25 +364,31 @@ class Safe_To_USB():
         self.device_list = (device.device_node for device in self.context.list_devices(subsystem='block', DEVTYPE='partition'))
     
     def check_USB(self):
-        global USB_FLAG
+        # global USB_FLAG
+        
         for i in self.device_list:
             if i == "/dev/sda1":
                 try:
-                    subprocess.call(['sh', 'Installation/USB_config.sh'])
-                    yaml_file["USB_FOLDER"]["STATUS"] = True
+                    if yaml_file["USB_FOLDER"]["STATUS"] == False:
+                        subprocess.call(['sh', 'Installation/USB_config.sh'])
+                        yaml_file["USB_FOLDER"]["STATUS"] = True                        
+                        with open(fname, 'w') as yaml_write:
+                            yaml_write.write(yaml.dump(yaml_file, sort_keys=False))
+
                 except Exception as e:
                     print('\033[91m' + "ERROR: {}".format(e) )
                     print("Couldn't create Folder")
-                USB_FLAG = True
+                # USB_FLAG = True
+                self.status = True
                 break
-            else:
-                USB_FLAG = False
+        
+        return self.status
 
 
     def write_Backup(self, data):
     #Prueft ob die Datei existiert
-        if (self.check_USB() & yaml_file["USB_FOLDER"]["STATUS"]):
-            with open("mnt/Backup_Data/Backup.csv", 'a') as bu_file: #ANPASSUNG AN USB SPEICHERORT
+        if (self.check_USB()):
+            with open("/mnt/Backup_Data/Backup.csv", 'a') as bu_file: #ANPASSUNG AN USB SPEICHERORT
                 for i in range(len(data)):
                     bu_file.write("{}; ". format(data[i]))
                 bu_file.write('\n')
@@ -423,8 +430,7 @@ def Test_DB_ext_Insert():
 def Test_USB_BU():
     data = [1627318641.5335495, 1.0, 1.1, 1.2, 2.0, 2.1, 2.2, 3.0, 3.1, 3.2, 4.0, 4.1, 4.2, 5.0, 5.1, 5.2, 111, 222, 333, 444, 555]
     USB_BU = Safe_To_USB()
-    USB_BU.check_USB()
-    if (USB_FLAG):
+    if (USB_BU.check_USB()):
         USB_BU.write_Backup(data)
         print("USB recognized and Data successfully written")
     else:
@@ -464,10 +470,10 @@ if __name__ == "__main__":
     #    time.sleep(1)
     # get_time()
     # print(datetime.now())
-    Test_USB_BU()
+    # Test_USB_BU()
     # Test_Solarzellen()
     # Test_GPS()
-    '''
+    
     try:
         print("Software booting...")
         USB_BU = Safe_To_USB()
@@ -498,7 +504,7 @@ if __name__ == "__main__":
         
         USB_BU.check_USB()
 
-        if USB_FLAG:
+        if USB_BU.check_USB():
             print("USB recognized")
         else:
             print('\033[93m' + "WARNING: No USB available")
@@ -620,7 +626,7 @@ if __name__ == "__main__":
             SZ4 = np.array([])
             SZ5 = np.array([])
 
-            if USB_FLAG:
+            if USB_BU.check_USB():
                 USB_BU.write_Backup(nullsatz) 
 
             BIL.insert_data(nullsatz, True)
@@ -633,4 +639,4 @@ if __name__ == "__main__":
         print('\033[91m' + "FAIL: Softwareboot" )
         print(e)
         sys.exit("ERROR: Bad Timeout. Failed to start Software")
-    '''
+    

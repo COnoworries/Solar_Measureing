@@ -212,6 +212,7 @@ class GPS_Data:
                 self.liste[i] = self.liste[i].strip()
             self.answer = 0
             try:
+                print(self.liste)
                 return [float(self.liste[0]),float(self.liste[2]),float(self.liste[6])]
             except Exception:
                 return [0.0,0.0,0.0]
@@ -270,7 +271,7 @@ class Backup_Influx_loc:
         measurements = {
                 "measurement": self.MEASUREMENT_NAME,
                 "tags":{},
-                "time": datetime.now(TIMEZONE),
+                "time": 0, #datetime.now(TIMEZONE),
                 "fields": {
                     "Solarzelle 1 (Mean)": data[1],
                     "Solarzelle 1 (Max) ": data[2],
@@ -472,8 +473,8 @@ if __name__ == "__main__":
     # print(datetime.now())
     # Test_USB_BU()
     # Test_Solarzellen()
-    # Test_GPS()
-    
+    Test_GPS()
+    '''
     try:
         print("Software booting...")
         USB_BU = Safe_To_USB()
@@ -639,4 +640,4 @@ if __name__ == "__main__":
         print('\033[91m' + "FAIL: Softwareboot" )
         print(e)
         sys.exit("ERROR: Bad Timeout. Failed to start Software")
-    
+    '''

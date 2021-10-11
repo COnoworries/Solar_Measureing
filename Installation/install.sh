@@ -8,6 +8,10 @@
 #git clone https://github.com/Gesakul/Solar_Measureing.git
 #username: Gesakul
 #password: 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
+#---Make Shell-script executeable---
+#sudo chmod u+x install.sh
+#---EXECUTE---
+#sudo ./install.sh
 
 
 #------------------------------------
@@ -15,6 +19,7 @@
 #Path to config-file
 CONFIG="/boot/config.txt"
 LOCATION="/etc/wpa_supplicant/wpa_supplicant.conf"
+HOTSPOT_CONF="/etc/hostapd/hostapd.conf"
 
 
 #-------------------------------------
@@ -26,8 +31,8 @@ apt update
 apt upgrade -y
 
 #change password
-echo "change pwd"
-passwd
+echo "change pwd" 
+passwd pi
 
 
 #install influxdb 1.8.9
@@ -135,7 +140,7 @@ apt update && apt install -y grafana
 
 echo "initialize grafana"
 cp /Solar_Measureing/Installation/influx_datasource.yaml /etc/grafana/provisioning/datasources
-cp ############################################### /etc/grafana/provisioning/dashboards
+cp /Solar_Measureing/Installation/Solar_Measureing-1632696549576.json /etc/grafana/provisioning/dashboards
 
 echo "enable & start grafana-server"
 systemctl unmask grafana-server.service
@@ -170,28 +175,34 @@ apt-get install -y hostapd
 apt-get install -y dnsmasq
 systemctl unmask hostapd
 
-HOTSPOT_CONF="/etc/hostapd/hostapd.conf"
 
-echo "#2.4GHz setup wifi 80211 b,g,n" >> HOTSPOT_CONF
-echo "interface=wlan0" >> HOTSPOT_CONF
-echo "driver=nl80211" >> HOTSPOT_CONF
-echo "ssid=RPiHotspot" >> HOTSPOT_CONF
-echo "hw_mode=g" >> HOTSPOT_CONF
-echo "channel=8" >> HOTSPOT_CONF
-echo "wmm_enabled=0" >> HOTSPOT_CONF
-echo "macaddr_acl=0" >> HOTSPOT_CONF
-echo "auth_algs=1" >> HOTSPOT_CONF
-echo "ignore_broadcast_ssid=0" >> HOTSPOT_CONF
-echo "wpa=2" >> HOTSPOT_CONF
-echo "wpa_passphrase=1234567890" >> HOTSPOT_CONF
-echo "wpa_key_mgmt=WPA-PSK" >> HOTSPOT_CONF
-echo "wpa_pairwise=CCMP TKIP" >> HOTSPOT_CONF
-echo "rsn_pairwise=CCMP" >> HOTSPOT_CONF
-echo " " >> HOTSPOT_CONF
-echo "#80211n - Change GB to your WiFi country code" >> HOTSPOT_CONF
-echo "country_code=DE" >> HOTSPOT_CONF
-echo "ieee80211n=1" >> HOTSPOT_CONF
-echo "ieee80211d=1" >> HOTSPOT_CONF
+if test -f "$HOTSPOT_CONF"; then
+    echo "$HOTSPOT_CONF exists."
+else
+    touch /etc/hostapd/hostapd.conf
+fi
+
+echo "#2.4GHz setup wifi 80211 b,g,n" > $HOTSPOT_CONF
+echo "interface=wlan0" >> $HOTSPOT_CONF
+echo "driver=nl80211" >> $HOTSPOT_CONF
+echo "hw_mode=g" >> $HOTSPOT_CONF
+echo "channel=7" >> $HOTSPOT_CONF
+echo "wmm_enabled=0" >> $HOTSPOT_CONF
+echo "macaddr_acl=0" >> $HOTSPOT_CONF
+echo "auth_algs=1" >> $HOTSPOT_CONF
+echo "ignore_broadcast_ssid=0" >> $HOTSPOT_CONF
+echo "wpa=2" >> $HOTSPOT_CONF
+echo "wpa_key_mgmt=WPA-PSK" >> $HOTSPOT_CONF
+echo "wpa_pairwise=CCMP TKIP" >> $HOTSPOT_CONF
+echo "rsn_pairwise=CCMP" >> $HOTSPOT_CONF
+echo "ssid=RPiHotspot" >> $HOTSPOT_CONF
+echo "wpa_passphrase=123Lukas" >> $HOTSPOT_CONF
+echo " " >> $HOTSPOT_CONF
+echo "#80211n - Change GB to your WiFi country code" >> $HOTSPOT_CONF
+echo "country_code=DE" >> $HOTSPOT_CONF
+echo "ieee80211n=1" >> $HOTSPOT_CONF
+echo "ieee80211d=1" >> $HOTSPOT_CONF
+
 
 
 #Set country-location

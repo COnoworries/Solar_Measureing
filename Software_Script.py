@@ -32,12 +32,12 @@ Attempt_GPS = 0
 
 
 
-### ---get_networktime--- ###
-def get_time():
-    ntp_client = ntplib.NTPClient()
-    response = ntp_client.request('pool.ntp.org')
-    #print(ctime(response.tx_time))
-    return response
+# ### ---get_networktime--- ###
+# def get_time():
+#     ntp_client = ntplib.NTPClient()
+#     response = ntp_client.request('pool.ntp.org')
+#     #print(ctime(response.tx_time))
+#     return response
 
 ### ---LED-SETUP--- ###
 GPIO.setwarnings(False)
@@ -60,9 +60,9 @@ class Vibrationssensor:
         self.Y_AXIS_PIN = 1
         self.Z_AXIS_PIN = 2
         self.ADC_AMPLITUDE = 4096 #amplitude of the 12bit-ADC of Arduino is 4096LSB
-        self.ADC_REF = 3.3   #ADC reference is 5v
+        self.ADC_REF = 3.33   #ADC reference is 3.33v
         
-    def getXYZ(self, x, y, z):
+    def getXYZ(self):
         #Get all Data from ADC
         x = self.adc.read(channel = self.X_AXIS_PIN)
         y = self.adc.read(channel = self.Y_AXIS_PIN)
@@ -74,7 +74,7 @@ class Vibrationssensor:
         #get real g-force value
         x = y = z = 0
         xvoltage = yvoltage = zvoltage = 0.0
-        erg = self.getXYZ(x,y,z)
+        erg = self.getXYZ()
         x = erg[0]
         y = erg[1]
         z = erg[2]
@@ -100,12 +100,12 @@ class Vibrationssensor:
         
         #Lege 'Ruhewerte' fest
         #Get X und Y in Normallage
-        get_erg = self.getXYZ(x,y,z)
+        get_erg = self.getXYZ()
         self.ZERO_X = get_erg[0] * (3.3/4096)
         self.ZERO_Y = get_erg[1] * (3.3/4096)
         input("Turn x-axis straight up and press Enter")
         #Get Z in Normallage
-        get_erg = self.getXYZ(x,y,z)
+        get_erg = self.getXYZ()
         self.ZERO_Z = get_erg[2] * (3.3/4096)
         
         #Messe aktuelle g-Zahl
@@ -463,7 +463,11 @@ if __name__ == "__main__":
     # GPIO.output(4, GPIO.HIGH)
     
     # Test_DB_loc_Insert()
-    # Test_VS_Read()
+    Vibrationssensor().Calibrate()
+    while(1):
+        # print(Vibrationssensor().getXYZ())
+        Test_VS_Read()
+        time.sleep(2)
     # Vibrationssensor().Calibrate()
     # for i in range (1000):
     #    #Test_VS_Read()
@@ -473,7 +477,7 @@ if __name__ == "__main__":
     # print(datetime.now())
     # Test_USB_BU()
     # Test_Solarzellen()
-    Test_GPS()
+    # Test_GPS()
     '''
     try:
         print("Software booting...")

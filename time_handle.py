@@ -41,17 +41,17 @@ while(1):
 
         #print("SEKUNDE VORBEI")
         a += 1
-        print(a)
+
+        # print(a)
 
     if a != 10:
         print(a)
         print("Es ist passiert!")
+    elif a == 10:
+        print(a)
     
     print(datetime.now())
     
     
     a = 0
     x += 1   
-       
-
-                        

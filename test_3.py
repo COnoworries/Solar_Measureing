@@ -15,12 +15,21 @@ time_count = 0
 
 def send_at(command,timeout):
     rec_buff = ''
-    ser.write((command+('\n')).encode('utf-8'))
+    ser.write((command+('\n')).encode())
+    while ser.out_waiting:
+        continue
     time.sleep(timeout)
-    if ser.in_waiting:
-        time.sleep(0.01)
-        rec_buff = ser.read(ser.in_waiting)
+    print(ser.cts)
+    print(ser.rts)
+    print(ser.dtr)
+    print(ser.dsr)
+    if True:
+        time.sleep(1)
+        while ser.in_waiting:
+            rec_buff = ser.read(ser.in_waiting)
         print(rec_buff)
+    else:
+        print("wurd nix")
 
 
 def power_on(power_key):
@@ -32,7 +41,7 @@ def power_on(power_key):
     GPIO.output(power_key,GPIO.HIGH)
     time.sleep(2)
     GPIO.output(power_key,GPIO.LOW)
-    time.sleep(10)
+    time.sleep(20)
     ser.reset_input_buffer()
     print('SIM7600X is ready')
 
@@ -71,7 +80,7 @@ while i <20:
             print('AT+CGPSINFO')
             print('---------------------------------------------')
             time.sleep(2)
-            send_at('AT+CGPSINFO', 1)
+            send_at('AT+CGPSINFO', 5)
             #ser.flush()
             ser.reset_input_buffer()
             ser.reset_output_buffer()

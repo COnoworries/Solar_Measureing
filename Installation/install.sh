@@ -146,8 +146,8 @@
 # apt update && apt install -y grafana
 
 echo "-----initialize grafana-----"
-cp -a influx_datasource.yaml /etc/grafana/provisioning/datasources
-cp -a Solar_Measureing-1632696549576.json /etc/grafana/provisioning/dashboards
+cp -a /home/pi/Solar_Measureing/Installation/influx_datasource.yaml /etc/grafana/provisioning/datasources
+cp -a /home/pi/Solar_Measureing/Installation/Solar_Measureing-1632696549576.json /etc/grafana/provisioning/dashboards
 
 # echo "-----enable & start grafana-server-----"
 # systemctl unmask grafana-server.service

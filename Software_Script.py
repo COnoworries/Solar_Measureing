@@ -17,7 +17,7 @@ import math
 
 
 ### ---CONFIG_Data--- ###
-fname = 'config.yaml'
+fname = '/home/pi/Solar_Measureing/config.yaml'
 yaml_file = open(fname)
 yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
 INTERVALL = yaml_file["Save_Intervall"]["INTERVALL"]

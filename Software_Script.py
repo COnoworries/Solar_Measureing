@@ -13,6 +13,7 @@ import serial
 import sys, traceback
 import pytz
 import subprocess
+import math
 
 
 ### ---CONFIG_Data--- ###
@@ -171,7 +172,6 @@ class GPS_Data:
                 #print(command + ' back:\t' + rec_buff.decode())
                 return 0
             else:
-                #print(rec_buff.decode())
                 return self.rec_buff.decode()
         else:
             print('GPS is not ready')
@@ -195,15 +195,16 @@ class GPS_Data:
             self.answer = 0
             try:
                 # print(self.liste)
-                return [float(self.liste[0]),float(self.liste[2]),float(self.liste[6])]
+                #Lat Long Alt, Date, Time, speed
+                return [float(self.liste[0]),float(self.liste[2]),float(self.liste[6]),float(self.liste[4]),float(self.liste[5]),float(self.liste[7])]
             except Exception:
-                return [0.0,0.0,0.0]
+                return [0.0,0.0,0.0,0.0,0.0]
         
         else:
             print('error %d'%self.answer)
             self.rec_buff = ''
             self.send_at('AT+CGPS=0','OK',0.1)
-            return [0.0,0.0,0.0]
+            return [0.0,0.0,0.0,0.0,0.0]
         #time.sleep(1.5)
 
 
@@ -247,12 +248,12 @@ class Backup_Influx_loc:
     def start_data(self):
         self.insert_data()
     
-    def insert_data(self, data = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ], status = False):
+    def insert_data(self, data = [0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ], status = False):
         
         measurements = {
                 "measurement": self.MEASUREMENT_NAME,
                 "tags":{},
-                "time": 0, #datetime.now(TIMEZONE),
+                "time": data[0], #datetime.now(TIMEZONE),
                 "fields": {
                     "Solarzelle 1 (Mean)": data[1],
                     "Solarzelle 1 (Max) ": data[2],
@@ -380,6 +381,22 @@ class Safe_To_USB():
         else: 
             return self.check_USB()
 
+### ---Convert Time---###
+def time_convert(date_val, time_val):
+    date = float(date_val)
+    y = int(math.modf(date/100)[0]*100)+2000
+    m = int(math.modf(math.modf(date/100)[1]/100)[0]*100)
+    d = int(math.modf(math.modf(date/100)[1]/100)[1])
+    date_string = "{0:04}/{1:02}/{2:02}".format(y,m,d)
+    t = float(time_val)
+    S = int(math.modf(t/100)[0]*100)
+    M = int(math.modf(math.modf(t/100)[1]/100)[0]*100)
+    H = int(math.modf(math.modf(t/100)[1]/100)[1]) + 2
+    time_string = "{0:02}/{1:02}/{2:02}".format(H,M,S)
+    end_string = date_string + '/' + time_string
+    element = datetime.strptime(end_string,"%Y/%m/%d/%H/%M/%S")
+    return element
+
 ### ---main()--- ###
 def main():
     #Kalibrieren der Software
@@ -412,7 +429,8 @@ def main():
         print("Influx-connection successfull")
     except Exception as e:
         print('\033[91m' + "ERROR: {}".format(e) )
-        sys.exit("ERROR: Influx-connection refused")
+        traceback.print_exc(file=sys.stdout)
+        sys.exit("ERROR: Influx-connection failed\033[00m")
         #raise ConnectionError("Influx-connection refused")
     
     
@@ -508,11 +526,15 @@ def main():
             gps_val = GPS.get_gps_position()
         except Exception as e:
             print('\033[91m' + "{}" + '\033[00m'.format(e))
-            gps_val = [0.0, 0.0, 0.0]
+            gps_val = [0.0,0.0,0.0,0.0,0.0]
             
         
-        #print(datensatz)
-        datensatz[0] = datetime.now(TIMEZONE)
+        if gps_val[3] != 0:
+            datensatz[0] = time_convert(gps_val[3],gps_val[4])
+            print("eigene zeit")
+            print(datensatz[0])
+        else:
+            datensatz[0] = datetime.now(TIMEZONE)
         datensatz[1] = np.mean(SZ1)
         datensatz[2] = np.max(SZ1)
         datensatz[3] = np.min(SZ1)
@@ -533,7 +555,8 @@ def main():
         datensatz[18] = gps_val[2]
         datensatz[-2] = VS_max_val[2]
         datensatz[-1] = np.mean(z_data)
-        
+        print(datensatz)
+
         #Zurücksetzten der Listen und Arrays
         VS_max_val = [0.0, 0.0, 0.0]
         SZ_max_val = [0.0, 0.0, 0.0, 0.0, 0.0]
@@ -600,9 +623,10 @@ def Test_GPS():
     i = 0
     try:
         GPS.power_on(GPS.power_key)
-        while i < 5:
+        while i < 50:
             print(GPS.get_gps_position())
             i+=1
+            time.sleep(1)
         GPS.power_down(GPS.power_key)
     except:
         if GPS.ser != None:
@@ -630,6 +654,8 @@ def Test_main():
 if __name__ == "__main__":
 
     try:
+        # Test_main()
+        # print(datetime.now(TIMEZONE))
         main()
 
     except KeyboardInterrupt:

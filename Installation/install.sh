@@ -9,7 +9,7 @@
 #username: Gesakul
 #password: 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
 #---Make Shell-script executeable and execute it---
-#sudo chmod u+x install.sh && ./install.sh
+#sudo chmod u+x install.sh && sudo ./install.sh
 
 
 
@@ -198,16 +198,16 @@ sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
 DNS_FILE="/etc/dnsmasq.conf"
 echo "# DHCP-Server aktiv für WLAN-Interface" >> $DNS_FILE
 echo "interface=wlan0" >> $DNS_FILE
-echo " " >> $DNS_FILE
+echo "" >> $DNS_FILE
 echo "# DHCP-Server nicht aktiv für bestehendes Netzwerk" >> $DNS_FILE
 echo "no-dhcp-interface=eth0" >> $DNS_FILE
-echo " " >> $DNS_FILE
+echo "" >> $DNS_FILE
 echo "# IPv4-Adressbereich und Lease-Time" >> $DNS_FILE
 echo "dhcp-range=192.168.1.100,192.168.1.200,255.255.255.0,24h" >> $DNS_FILE
-echo " " >> $DNS_FILE
+echo "" >> $DNS_FILE
 echo "# DNS" >> $DNS_FILE
 echo "dhcp-option=option:dns-server,192.168.1.1" >> $DNS_FILE
-echo " " >> $DNS_FILE
+echo "" >> $DNS_FILE
 
 
 if test -f "$HOTSPOT_CONF"; then
@@ -218,11 +218,11 @@ fi
 
 echo "Copy lines to $HOTSPOT_CONF"
 echo "# WLAN-Router-Betrieb" > $HOTSPOT_CONF
-echo " " > $HOTSPOT_CONF
+echo "" > $HOTSPOT_CONF
 echo "# Schnittstelle und Treiber" >> $HOTSPOT_CONF
 echo "interface=wlan0" >> $HOTSPOT_CONF
 echo "#driver=nl80211" >> $HOTSPOT_CONF
-echo " " >> $HOTSPOT_CONF
+echo "" >> $HOTSPOT_CONF
 echo "# WLAN-Konfiguration" >> $HOTSPOT_CONF
 echo "ssid=RPiNetwork" >> $HOTSPOT_CONF
 echo "channel=2" >> $HOTSPOT_CONF
@@ -231,7 +231,7 @@ echo "ieee80211n=1" >> $HOTSPOT_CONF
 echo "ieee80211d=1" >> $HOTSPOT_CONF
 echo "country_code=DE" >> $HOTSPOT_CONF
 echo "wmm_enabled=1" >> $HOTSPOT_CONF
-echo " " >> $HOTSPOT_CONF
+echo "" >> $HOTSPOT_CONF
 echo "# WLAN-Verschlüsselung" >> $HOTSPOT_CONF
 echo "auth_algs=1" >> $HOTSPOT_CONF
 echo "wpa=2" >> $HOTSPOT_CONF

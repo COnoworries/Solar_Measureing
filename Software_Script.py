@@ -30,7 +30,7 @@ Attempt_GPS = 0
 ### ---LED-SETUP--- ###
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(4, GPIO.OUT)
+GPIO.setup(17, GPIO.OUT)
 
 ### ---Daten_Lesen--- ###
 class Vibrationssensor:
@@ -402,7 +402,7 @@ def main():
     #Kalibrieren der Software
     print("Software booting...")
     global Attempt_GPS
-    GPIO.output(4, GPIO.HIGH)
+    GPIO.output(17, GPIO.HIGH)
     SZ = Solarzellen()
     GPS = GPS_Data()
     time.sleep(1)
@@ -446,9 +446,8 @@ def main():
     #VS.Calibrate()
     
     #Variablen initialisieren
-    VS_max_val = [0.0, 0.0, 0.0]
     gps_val = [0.0, 0.0, 0.0]
-    SZ_max_val = [0.0, 0.0, 0.0, 0.0, 0.0]
+    # SZ_max_val = [0.0, 0.0, 0.0, 0.0, 0.0]
     x_data = np.array([])
     y_data = np.array([])
     z_data = np.array([])
@@ -477,51 +476,20 @@ def main():
 
             #TIME in 0.1s Abschnitten
             while start_time_local + timedelta(milliseconds=100) > end_time_local:
-                VS_val_new = VS.getAcceleration()
-                SZ_val_new = SZ.Read_Data()
                 end_time_local = datetime.now()
             end_time_gloabl = datetime.now() 
 
-        #MAXIMUM VIB-SENS-VAL
-        if VS_val_new[0] > VS_max_val[0]:
-            VS_max_val[0] = VS_val_new[0]
-            
-        if VS_val_new[1] > VS_max_val[1]:
-            VS_max_val[1] = VS_val_new[1]
-            
-        if VS_val_new[2] > VS_max_val[2]:
-            VS_max_val[2] = VS_val_new[2]
-            
-        if SZ_val_new[0] > SZ_max_val[0]:
-            SZ_max_val[0] = SZ_val_new[0]
-            
-        if SZ_val_new[1] > SZ_max_val[1]:
-            SZ_max_val[1] = SZ_val_new[1]
-            
-        if SZ_val_new[2] > SZ_max_val[2]:
-            SZ_max_val[2] = SZ_val_new[2]
-            
-        if SZ_val_new[3] > SZ_max_val[3]:
-            SZ_max_val[3] = SZ_val_new[3]
-            
-        if SZ_val_new[4] > SZ_max_val[4]:
-            SZ_max_val[4] = SZ_val_new[4]
-        
-            
-        
-        #MEAN VIB_SENS_VAL
-        x_data = np.append(x_data, VS_val_new[0])
-        y_data = np.append(y_data, VS_val_new[1])
-        z_data = np.append(z_data, VS_val_new[2])
-        SZ1 = np.append(SZ1, SZ_val_new[0])
-        SZ2 = np.append(SZ2, SZ_val_new[1])
-        SZ3 = np.append(SZ3, SZ_val_new[2])
-        SZ4 = np.append(SZ4, SZ_val_new[3])
-        SZ5 = np.append(SZ5, SZ_val_new[4])
-            
-        
-        
-    
+            VS_val = VS.getAcceleration()
+            SZ_val_new = SZ.Read_Data()
+            x_data = np.append(x_data, VS_val[0])
+            y_data = np.append(y_data, VS_val[1])
+            z_data = np.append(z_data, VS_val[2])
+            SZ1 = np.append(SZ1, SZ_val_new[0])
+            SZ2 = np.append(SZ2, SZ_val_new[1])
+            SZ3 = np.append(SZ3, SZ_val_new[2])
+            SZ4 = np.append(SZ4, SZ_val_new[3])
+            SZ5 = np.append(SZ5, SZ_val_new[4])
+
         try:
             gps_val = GPS.get_gps_position()
         except Exception as e:
@@ -531,10 +499,11 @@ def main():
         
         if gps_val[3] != 0:
             datensatz[0] = time_convert(gps_val[3],gps_val[4])
-            print("eigene zeit")
-            print(datensatz[0])
+            # print("eigene zeit")
+            # print(datensatz[0])
         else:
             datensatz[0] = datetime.now(TIMEZONE)
+
         datensatz[1] = np.mean(SZ1)
         datensatz[2] = np.max(SZ1)
         datensatz[3] = np.min(SZ1)
@@ -553,13 +522,11 @@ def main():
         datensatz[16] = gps_val[0]
         datensatz[17] = gps_val[1]
         datensatz[18] = gps_val[2]
-        datensatz[-2] = VS_max_val[2]
+        datensatz[-2] = np.max(z_data)
         datensatz[-1] = np.mean(z_data)
-        print(datensatz)
+        # print(datensatz)
 
         #Zurücksetzten der Listen und Arrays
-        VS_max_val = [0.0, 0.0, 0.0]
-        SZ_max_val = [0.0, 0.0, 0.0, 0.0, 0.0]
         x_data = np.array([])
         y_data = np.array([])
         z_data = np.array([])
@@ -568,6 +535,7 @@ def main():
         SZ3 = np.array([])
         SZ4 = np.array([])
         SZ5 = np.array([])
+
 
         #schreiben auf USB-CSV
         if USB_BU.check_USB():

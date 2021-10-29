@@ -419,8 +419,6 @@ def waiting():
 
     print("connection to satellite...   finished  \n")
 
-
-
 ### ---main()--- ###
 def main():
     #Kalibrieren der Software
@@ -606,7 +604,6 @@ def main():
         count = 0.0
         x += 1
 
-
 ### --- Tests --- ###
 def Test_Solarzellen():
     try:
@@ -678,7 +675,6 @@ def Test_main():
     # Test_USB_BU()
     # Test_Solarzellen()
     Test_GPS()
-
 
 if __name__ == "__main__":
 

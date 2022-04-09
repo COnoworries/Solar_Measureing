@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #!/usr/bin/python3
 # -*- coding:utf-8 -*-
 from influxdb import InfluxDBClient
@@ -396,18 +395,6 @@ def time_convert(date_val, time_val):
     y = int(round((math.modf(date/100)[0]*100),2)+2000)
     m = int(round(math.modf(math.modf(date/100)[1]/100)[0],2)*100)
     d = int(round(math.modf(math.modf(date/100)[1]/100)[1],2))
-=======
-import math
-from datetime import datetime
-
-def time_convert(date_val, time_val):
-    "converts date and time strings to 'datetime' elements (format: date = 'DDMMYY', time= 'HHMMSS')"
-    date = float(date_val)
-    y = int(math.modf(date/100)[0]*100)+2000
-    m = int(math.modf(math.modf(date/100)[1]/100)[0]*100)
-    d = int(math.modf(math.modf(date/100)[1]/100)[1])
-    print(m)
->>>>>>> aabe00b72171da343a5079b70e543ca20d7d1960
     date_string = "{0:04}/{1:02}/{2:02}".format(y,m,d)
     t = float(time_val)
     S = int(math.modf(t/100)[0]*100)
@@ -418,7 +405,6 @@ def time_convert(date_val, time_val):
     element = datetime.strptime(end_string,"%Y/%m/%d/%H/%M/%S")
     return element
 
-<<<<<<< HEAD
 ### ---Waiting function--- ###
 def waiting():
     "creates an waitinganimation"
@@ -700,9 +686,3 @@ if __name__ == "__main__":
 
     sys.exit(0)
 
-=======
-date = '081121'
-time = '070138'
-
-print(time_convert(date, time))
->>>>>>> aabe00b72171da343a5079b70e543ca20d7d1960

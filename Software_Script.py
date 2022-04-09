@@ -428,10 +428,6 @@ def main():
     global ATTEMPT_GPS_ON
     global ATTEMPT_GPS_STAT
     global SETTIME
-<<<<<<< HEAD
-=======
-    GPIO.output(17, GPIO.HIGH)
->>>>>>> aabe00b72171da343a5079b70e543ca20d7d1960
     SZ = Solarzellen()
     GPS = GPS_Data()
     time.sleep(1)
@@ -522,11 +518,7 @@ def main():
         #Time in 1s Abschnitten
         while start_time_global + timedelta(seconds=x) > end_time_gloabl:
 
-<<<<<<< HEAD
             time.sleep(ABTASTRATE)
-=======
-            time.sleep(0.1)
->>>>>>> aabe00b72171da343a5079b70e543ca20d7d1960
             count +=1.0
             VS_val = VS.getacceleration()
             SZ_val_new = SZ.read_data()
@@ -591,17 +583,10 @@ def main():
         BIL.insert_data(datensatz, True)
 
         t3 = time.perf_counter()
-<<<<<<< HEAD
 
         count = 0.0
         x += (1*INTERVALL)
 
-=======
-
-        count = 0.0
-        x += 1
-
->>>>>>> aabe00b72171da343a5079b70e543ca20d7d1960
 ### --- Tests --- ###
 
 class Tests:
@@ -700,7 +685,4 @@ if __name__ == "__main__":
         GPIO.cleanup()
 
     sys.exit(0)
-<<<<<<< HEAD
 
-=======
->>>>>>> aabe00b72171da343a5079b70e543ca20d7d1960

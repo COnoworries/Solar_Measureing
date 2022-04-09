@@ -29,6 +29,7 @@ delta_time = timedelta(seconds=INTERVALL)
 ATTEMPT_GPS_ON = 0
 ATTEMPT_GPS_STAT = 0
 SETTIME = False
+GPS_ON = False
 
 
 ### ---LED-SETUP--- ###
@@ -484,26 +485,30 @@ def main():
     #Zeitinformation, den Mittel-/, Maximal-/ und Minimalwerten jeder Solarzelle, den Positionsdaten des Sensors (Längengrad, Breitengrad, Höhe) und den Maximalwert sowie Mittelwert des Vibrationssensors.
     datensatz = [0.0, 1.0, 1.1, 1.2, 2.0, 2.1, 2.2, 3.0, 3.1, 3.2, 4.0, 4.1, 4.2, 5.0, 5.1, 5.2, 111, 222, 333, 444, 555]
 
-    gps_val = GPS.get_gps_position()
-
-    while not gps_val[0]:
-        waiting()
+    if GPS_ON:
         gps_val = GPS.get_gps_position()
-        if not gps_val[0]:
-            print("connection failed... restart")
-            ATTEMPT_GPS_STAT += 1
-        if ATTEMPT_GPS_STAT == 5:
-            GPS.send_at('AT+CGPS=0','OK',1)
-        if ATTEMPT_GPS_STAT == 6:
-            GPS.send_at('AT+CGPS=1,1','OK',0.2)
-        if ATTEMPT_GPS_STAT == 10:
-            raise TimeoutError("GPS failed to start")
+
+        while not gps_val[0]:
+            waiting()
+            gps_val = GPS.get_gps_position()
+            if not gps_val[0]:
+                ATTEMPT_GPS_STAT += 1
+                print("connection failed... restart (attempts: ", ATTEMPT_GPS_STAT, ")")
+            if ATTEMPT_GPS_STAT == 1:
+                print("DEBUG: GPS failed, continue")
+                break
+            if ATTEMPT_GPS_STAT == 5:
+                GPS.send_at('AT+CGPS=0','OK',1)
+            if ATTEMPT_GPS_STAT == 6:
+                GPS.send_at('AT+CGPS=1,1','OK',0.2)
+            if ATTEMPT_GPS_STAT == 10:
+                raise TimeoutError("GPS failed to start")
 
 
-    if not SETTIME:
-        print('\033[93m' + "OS time set\033[00m")
-        os.system('date -s "{}"'.format(time_convert(gps_val[3],gps_val[4])))
-        SETTIME = True
+        if not SETTIME:
+            print('\033[93m' + "OS time set\033[00m")
+            os.system('date -s "{}"'.format(time_convert(gps_val[3],gps_val[4])))
+            SETTIME = True
 
     #startwerte festlegen
     x = 1
@@ -534,12 +539,13 @@ def main():
             t1 = time.perf_counter()
 
         print(count)
-        try:
-            gps_val = GPS.get_gps_position()
-        except Exception as e:
-            traceback.print_exc(file=sys.stdout)
-            print('\033[91m' + '{}' + '\033[00m'.format(e))
-            gps_val = [0.0,0.0,0.0,0.0,0.0]
+        if GPS_ON:
+            try:
+                gps_val = GPS.get_gps_position()
+            except Exception as e:
+                traceback.print_exc(file=sys.stdout)
+                print('\033[91m' + '{}' + '\033[00m'.format(e))
+                gps_val = [0.0,0.0,0.0,0.0,0.0]
 
         if count != 0:
             datensatz[0] = datetime.now(TIMEZONE)

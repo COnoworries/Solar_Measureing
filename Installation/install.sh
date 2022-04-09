@@ -7,7 +7,7 @@
 #sudo apt install -y git
 #git clone https://github.com/Gesakul/Solar_Measureing.git
 #username: Gesakul
-#password: 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
+#password: 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
 #---Make Shell-script executeable and execute it---
 #sudo chmod u+x install.sh && sudo ./install.sh
 

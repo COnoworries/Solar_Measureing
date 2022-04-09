@@ -1,3 +1,7 @@
+## V0.1
+Current Software-Version pushed directly from the Sensor.
+
+
 # Solar_Measureing
 Experimental proof of the PV-yield from vehicle-integrated PV-cells
 

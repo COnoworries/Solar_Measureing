@@ -390,6 +390,17 @@ class Safe_To_USB():
         else:
             return self.check_USB()
 
+def write_Backup_local(data):
+    """
+    save data local
+    """
+    with open("data/Backup.csv", 'a') as bu_file: 
+        for i in range(len(data)):
+            bu_file.write("{}; ". format(data[i]))
+        bu_file.write('\n')
+        print("Successful! Values to local Backup appended!")
+    bu_file.close()
+
 ### ---Convert Time---###
 def time_convert(date_val, time_val):
     date = float(date_val)
@@ -584,6 +595,9 @@ def main():
         #schreiben auf USB-CSV
         if USB_BU.check_USB():
             USB_BU.write_Backup(datensatz)
+
+        write_Backup_local(datensatz)
+        
 
         #schreiben in InfluxDB
         BIL.insert_data(datensatz, True)
